@@ -71,9 +71,9 @@ def reprojection_error_single(
     for k, a_k in enumerate(coefficients):
         X_hat += a_k * (dt ** k)
 
-    # R (from euler_abc_to_rotation) maps world→camera under Pose convention.
-    # X_cam = R @ (X_world - C) is the world-to-camera point transform.
-    X_cam = R @ (X_hat - C)
+    # R (from euler_abc_to_rotation) maps camera→world.
+    # World→camera: X_cam = R.T @ (X_world - C)
+    X_cam = R.T @ (X_hat - C)
 
     # Check the point is in front of the camera
     if X_cam[2] <= 1e-6:

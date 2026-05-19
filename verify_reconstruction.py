@@ -109,11 +109,11 @@ def generate_test_measurements(true_coeffs_x, true_coeffs_y, true_coeffs_z,
             true_coeffs_x, true_coeffs_y, true_coeffs_z, t, t0
         )
 
-        # Build rotation (Pose convention: R maps world→camera)
+        # Build rotation (R maps camera→world)
         R = euler_abc_to_rotation(np.radians(A_deg), np.radians(B_deg), np.radians(C_deg))
 
-        # Transform world point to camera frame
-        X_cam = R @ (X_true - C)
+        # World→camera point transform: X_cam = R.T @ (X_world - C)
+        X_cam = R.T @ (X_true - C)
         pixel = project_to_pixel(X_cam, fx, fy, cx, cy)
 
         u = pixel[0] + np.random.normal(0, noise_std)
@@ -165,9 +165,9 @@ def test_ray_builder():
         A_deg=90.0, B_deg=0.0, C_deg=0.0,
     )
     ray2 = synchronized_to_world_ray(sm2)
-    # With A=90°, camera X axis becomes world -Y
-    # A positive u offset should map to a negative Y world component
-    assert ray2.direction[1] < -0.1, f"Expected negative Y component, got {ray2.direction[1]:.3f}"
+    # With A=90°, Rz(90°) maps camera X → world Y
+    # A positive u offset → positive camera X → positive world Y
+    assert ray2.direction[1] > 0.1, f"Expected positive Y component, got {ray2.direction[1]:.3f}"
     # Z should still be the dominant forward component
     assert ray2.direction[2] > 0.9
     print(f"  [PASS] 90° Z rotation: direction=({ray2.direction[0]:.3f},{ray2.direction[1]:.3f},{ray2.direction[2]:.3f})")

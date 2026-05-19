@@ -79,8 +79,8 @@ def synchronized_to_world_ray(
     d_cam = d_cam / np.linalg.norm(d_cam)
 
     # Step 4: Rotate direction into world frame
-    # camera-to-world rotation maps camera vectors → world vectors
-    d_world = R_camera_to_world.T @ d_cam  # R.T maps camera→world
+    # R_camera_to_world maps camera vectors → world vectors
+    d_world = R_camera_to_world @ d_cam
     d_world = d_world / np.linalg.norm(d_world)
 
     # Step 5: Build world-frame ray
